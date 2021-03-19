@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
@@ -6,17 +8,18 @@ public class Main {
     static int degree = 0;
 
     public static void main(String[] args) {
+        System.out.println("Enter equation:");
         String equation = new Scanner(System.in).nextLine();
         String[] sides = equation.split("=");
 
         String[] left = sides[0].split(" ");
         String[] right = sides[1].split(" ");
 
+        Matcher m;
         for (int i = 0; i < left.length; i++) {
+            m = Pattern.compile("X\\^(?:[3-9]|[12]\\d)\\d*$").matcher(left[i]);
             if (left[i].equals("X^0")) {
                 c1 = fractionParse(left[i - 2]);
-//                if (left[i - 3].equals("-"))  not needed for X^0  i think
-//                    c1 = -1 * c1;
             }
             if (left[i].equals("X^1")) {
                 b1 = fractionParse(left[i - 2]);
@@ -28,16 +31,15 @@ public class Main {
                 if (left[i - 3].equals("-"))
                     a1 = -1 * a1;
             }
-            if (left[i].equals("X^3")) {
-                System.out.println("Cannot solve polynomial degree 3");
+            if (m.find()) {
+                System.out.println("Can only solve degree 0, 1, 2");
                 System.exit(0);
             }
         }
         for (int i = 0; i < right.length; i++) {
+            m = Pattern.compile("X\\^(?:[3-9]|[12]\\d)\\d*$").matcher(right[i]);
             if (right[i].equals("X^0")) {
                 c2 = fractionParse(right[i - 2]);
-//                if (right[i - 3].equals("-")) not needed for X^0 i think
-//                    c2 = -1 * c2;
             }
             if (right[i].equals("X^1")) {
                 b2 = fractionParse(right[i - 2]);
@@ -48,6 +50,10 @@ public class Main {
                 a2 = fractionParse(right[i - 2]);
                 if (right[i - 3].equals("-"))
                     a2 = -1 * a2;
+            }
+            if (m.find()) {
+                System.out.println("Can only solve degree 0, 1, 2");
+                System.exit(0);
             }
         }
 
@@ -94,6 +100,8 @@ public class Main {
             if (discriminant < 0) {
                 System.out.println("Discriminant is negative");
                 float x1 = (-1 * b0) / (2 * a0) , x2 = (float) (squareRoot(-1 * discriminant)) / (2 *  a0);
+                if (x2 < 0)
+                    x2 = -x2;
                 System.out.println(x1 + " + " + x2 + "i, " + x1 + " - " + x2 + "i");
                 System.exit(0);
             }
@@ -116,10 +124,9 @@ public class Main {
 
     }
 
-    public static String fmt(float d)
-    {
-        if(d == (long)d)
-            return String.format("%d", (long)d);
+    public static String fmt(float d) {
+        if(d == (long) d)
+            return String.format("%d", (long) d);
         else
             return String.format("%s", d);
     }
